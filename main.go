@@ -2,15 +2,34 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-func main() {
-	fmt.Println("start sub()")
-	done := make(chan bool)
+func primeNumber() chan int {
+	result := make(chan int)
 	go func() {
-		fmt.Println("sub() is finished")
-		done <- true
+		result <- 2
+		for i := 3; i < 100; i += 1 {
+			l := int(math.Sqrt(float64(i)))
+			found := false
+			for j := 3; j < l+1; j += 2 {
+				if i%j == 0 {
+					found = true
+					break
+				}
+			}
+			if !found {
+				result <- i
+			}
+		}
+		close(result)
 	}()
-	<-done
-	fmt.Println("all tasks are finished")
+	return result
+}
+
+func main() {
+	pn := primeNumber()
+	for n := range pn {
+		fmt.Println(n)
+	}
 }
