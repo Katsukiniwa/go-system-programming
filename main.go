@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"sync"
@@ -12,7 +13,7 @@ func PrimeNumber() chan int {
 	go func() {
 		result <- 2
 
-		for i := 3; i < 100; i += 1 {
+		for i := 3; i < 10; i += 1 {
 			l := int(math.Sqrt(float64(i)))
 			found := false
 
@@ -44,6 +45,8 @@ func main() {
 	start := time.Now()
 	fav()
 	fmt.Println("took: ", time.Since(start))
+
+	context_practice()
 }
 
 func fav() {
@@ -91,4 +94,16 @@ func fetchPostComments(post string, reschan chan any, wg *sync.WaitGroup) {
 
 	reschan <- []string{"Golang", "Java", "Rust"}
 	wg.Done()
+}
+
+func context_practice() {
+	fmt.Println("start sub()")
+
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		fmt.Println("sub() is finished")
+		cancel()
+	}()
+	<-ctx.Done()
+	fmt.Println("all tasks are finished")
 }
